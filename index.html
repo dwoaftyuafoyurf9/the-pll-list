@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Public Level List</title>
+<style>
+:root{--bg:#09070d;--panel:#110d18;--panel2:#171020;--line:#2a2033;--text:#f5f1f8;--muted:#aaa0b4;--purple:#9b4dff;--purple2:#6e28c9;--accent:#c77dff;--good:#72e0a0}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:radial-gradient(circle at 70% -10%,#241034 0,#09070d 38%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}
+a{color:inherit}
+.topbar{position:sticky;top:0;z-index:20;height:72px;background:rgba(7,5,10,.94);backdrop-filter:blur(14px);border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:28px}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:245px}
+.brand img{width:48px;height:48px;object-fit:contain;transform:rotate(-7deg);filter:drop-shadow(0 0 10px rgba(155,77,255,.65))}
+.brand span{font-weight:900;font-size:20px;letter-spacing:-.6px;color:#fff}
+.nav{display:flex;align-items:center;gap:8px;height:100%}
+.nav button{border:0;background:transparent;color:var(--muted);padding:24px 16px;height:100%;cursor:pointer;font-weight:750}
+.nav button.active,.nav button:hover{color:#fff}
+.nav button.active{border-bottom:3px solid var(--purple)}
+.search{margin-left:auto;width:min(300px,30vw);background:#100c15;border:1px solid var(--line);border-radius:12px;padding:11px 14px;color:#fff;outline:none}
+.search:focus{border-color:var(--purple)}
+.shell{display:grid;grid-template-columns:280px minmax(0,1fr);max-width:1500px;margin:auto;min-height:calc(100vh - 72px)}
+.sidebar{border-right:1px solid var(--line);padding:20px 14px;position:sticky;top:72px;height:calc(100vh - 72px);overflow:auto}
+.side-title{font-size:12px;color:var(--muted);font-weight:850;letter-spacing:1.2px;text-transform:uppercase;padding:8px 12px 12px}
+.level-item{width:100%;border:1px solid transparent;background:transparent;color:#d8d0df;border-radius:11px;padding:10px 12px;display:grid;grid-template-columns:38px 1fr;gap:10px;text-align:left;cursor:pointer}
+.level-item:hover{background:#160f1e}
+.level-item.active{background:linear-gradient(90deg,#28123b,#17101f);border-color:#3c2350;color:#fff}
+.level-rank{color:var(--muted);font-size:12px;font-weight:850;padding-top:2px}
+.level-item.active .level-rank{color:var(--accent)}
+.level-name{font-weight:760;font-size:14px;line-height:1.25}
+.main{padding:36px 44px 70px;min-width:0}
+.hero{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:28px}
+.eyebrow{color:var(--accent);font-size:12px;font-weight:850;letter-spacing:1.5px;text-transform:uppercase}
+h1{font-size:clamp(34px,5vw,62px);line-height:1;margin:8px 0 12px;letter-spacing:-2.5px}
+.meta{display:flex;flex-wrap:wrap;gap:8px}
+.pill{background:#16101d;border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:#c6bdcd;font-size:12px}
+.pill b{color:#fff}
+.hero-actions{display:flex;gap:10px}
+.btn{border:1px solid var(--line);background:#16101d;color:#fff;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:800}
+.btn.primary{background:linear-gradient(135deg,var(--purple2),var(--purple));border-color:#9b4dff}
+.btn:hover{filter:brightness(1.12)}
+.cover{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:#050406;box-shadow:0 18px 55px rgba(0,0,0,.4);cursor:pointer}
+.cover img{width:100%;height:100%;display:block;object-fit:cover}
+.cover:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.72))}
+.play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;width:68px;height:48px;border-radius:14px;border:0;background:#fff;color:#111;box-shadow:0 8px 25px rgba(0,0,0,.35);cursor:pointer;font-size:20px}
+.play:before{content:"";display:inline-block;margin-left:4px;border-left:15px solid #111;border-top:9px solid transparent;border-bottom:9px solid transparent}
+.cover-label{position:absolute;left:18px;bottom:15px;z-index:2;font-weight:800}
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0 34px}
+.info{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px}
+.info small{display:block;color:var(--muted);font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.info strong{font-size:17px}
+.section{margin-top:34px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:15px;border-bottom:1px solid var(--line);padding-bottom:12px}
+.section h2{font-size:25px;margin:0;letter-spacing:-.8px}
+.minimum{color:var(--muted);font-size:13px}
+.record{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:18px;padding:14px 2px;border-bottom:1px solid #201925}
+.record-name{font-weight:800;text-decoration:none}
+.record-name:hover{color:var(--accent);text-decoration:underline}
+.percent{font-weight:900;color:var(--good)}
+.verified{font-size:11px;color:#8d7e98;background:#15101a;border:1px solid var(--line);padding:5px 8px;border-radius:999px}
+.empty{padding:35px 0;color:var(--muted)}
+.leaderboard{display:none}
+.leaderboard.show{display:block}
+.leader-table{width:100%;border-collapse:collapse;margin-top:15px;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.leader-table th,.leader-table td{text-align:left;padding:14px;border-bottom:1px solid var(--line)}
+.leader-table th{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.leader-table tr:last-child td{border-bottom:0}
+.rank{font-weight:950;color:var(--accent)}
+.user-link{font-weight:850;text-decoration:none}
+.user-link:hover{color:var(--accent);text-decoration:underline}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px;z-index:50}
+.modal.open{display:flex}
+.modal-card{width:min(1000px,100%);background:#0e0a13;border:1px solid #382442;border-radius:18px;overflow:hidden;box-shadow:0 30px 90px #000}
+.modal-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}
+.modal-title{font-weight:900}
+.close{border:0;background:#1a121f;color:#fff;border-radius:9px;width:38px;height:34px;cursor:pointer}
+.video-wrap{aspect-ratio:16/9;background:#000}
+.video-wrap iframe{width:100%;height:100%;border:0;display:block}
+.note{padding:12px 16px;color:var(--muted);font-size:12px}
+.profile{display:none}
+.profile.show{display:block}
+.profile-head{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px}
+.profile-head h2{margin:0 0 8px;font-size:32px}
+.profile-stats{display:flex;gap:24px;color:var(--muted)}
+.profile-stats b{color:#fff}
+@media(max-width:900px){
+.topbar{padding:0 14px;gap:10px}.brand{min-width:auto}.brand span{display:none}.nav button{padding:24px 10px}.search{width:150px}
+.shell{grid-template-columns:1fr}.sidebar{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);display:flex;gap:7px;overflow:auto;padding:10px}.side-title{display:none}.level-item{min-width:180px}.main{padding:26px 18px 60px}.info-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+.nav{display:none}.search{margin-left:auto;width:190px}.hero{display:block}.hero-actions{margin-top:18px}.info-grid{grid-template-columns:1fr 1fr}.record{grid-template-columns:1fr auto}.verified{display:none}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+<a class="brand" href="#" id="brandHome">
+<img src="1000094201.png" alt="PLL Logo">
+<span>Public Level List</span>
+</a>
+<nav class="nav">
+<button id="listTab" class="active">List</button>
+<button id="leaderboardTab">Leaderboard</button>
+</nav>
+<input id="search" class="search" type="search" placeholder="Search levels..." autocomplete="off">
+</header>
+
+<div class="shell">
+<aside class="sidebar" id="levelList"></aside>
+
+<main class="main">
+<section id="listView">
+<div class="hero">
+<div>
+<div class="eyebrow">Public Level List</div>
+<h1 id="levelTitle">Loading...</h1>
+<div class="meta" id="levelMeta"></div>
+</div>
+<div class="hero-actions">
+<button class="btn primary" id="watchButton">Watch Level</button>
+</div>
+</div>
+
+<div class="cover" id="cover">
+<img id="thumbnail" alt="">
+<button class="play" aria-label="Watch level"></button>
+<div class="cover-label">Preview level video</div>
+</div>
+
+<div class="info-grid">
+<div class="info"><small>Placement</small><strong id="placement">—</strong></div>
+<div class="info"><small>Level ID</small><strong id="levelId">—</strong></div>
+<div class="info"><small>Points</small><strong id="points">—</strong></div>
+<div class="info"><small>Creator</small><strong id="creator">—</strong></div>
+</div>
+
+<section class="section">
+<div class="section-head">
+<h2>Records</h2>
+<div class="minimum" id="minimum">Minimum Percentage: —</div>
+</div>
+<div id="records"></div>
+</section>
+</section>
+
+<section class="leaderboard" id="leaderboardView">
+<div class="eyebrow">Public Level List</div>
+<h1>Leaderboard</h1>
+<p class="minimum">All Placements.</p>
+<table class="leader-table">
+<thead><tr><th>#</th><th>Name</th><th>Points</th><th>Records</th></tr></thead>
+<tbody id="leaderboardRows"></tbody>
+</table>
+</section>
+
+<section class="profile" id="profileView">
+<div class="eyebrow">Profile</div>
+<div class="profile-head">
+<h2 id="profileName">—</h2>
+<div class="profile-stats"><span>Points: <b id="profilePoints">0</b></span><span>Records: <b id="profileRecords">0</b></span><span>Placement: <b id="profilePlacement">—</b></span></div>
+</div>
+<div class="section"><div class="section-head"><h2>Records</h2></div><div id="profileRecordList"></div></div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="videoModal" role="dialog" aria-modal="true">
+<div class="modal-card">
+<div class="modal-top"><div class="modal-title" id="modalTitle">Video</div><button class="close" id="closeModal">×</button></div>
+<div class="video-wrap"><iframe id="videoFrame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
+<div class="note" id="modalNote"></div>
+</div>
+</div>
+
+<script>
+const levelList=document.getElementById("levelList");
+const search=document.getElementById("search");
+const listView=document.getElementById("listView");
+const leaderboardView=document.getElementById("leaderboardView");
+const profileView=document.getElementById("profileView");
+let data={levels:[]}, leaderboard={users:[]}, selectedLevel=null;
+
+async function loadJSON(){
+const [levelsRes,leaderboardRes]=await Promise.all([fetch("data.json"),fetch("leaderboard.json")]);
+if(!levelsRes.ok||!leaderboardRes.ok) throw new Error("Could not load data.json or leaderboard.json");
+data=await levelsRes.json();
+leaderboard=await leaderboardRes.json();
+renderLevelList();
+const first=data.levels.find(level=>Number(level.placement)>=1)||data.levels[0];
+if(first) showLevel(first.id);
+}
+
+function getVideoId(url){
+if(!url)return"";
+try{
+const u=new URL(url);
+if(u.hostname.includes("youtu.be"))return u.pathname.slice(1).split("/")[0];
+if(u.hostname.includes("youtube.com")){
+if(u.pathname==="/watch")return u.searchParams.get("v")||"";
+if(u.pathname.startsWith("/shorts/"))return u.pathname.split("/")[2]||"";
+if(u.pathname.startsWith("/embed/"))return u.pathname.split("/")[2]||"";
+}
+}catch(e){}
+return "";
+}
+
+function thumbnailFor(level){
+if(level.thumbnail)return level.thumbnail;
+const id=getVideoId(level.video);
+return id?`https://img.youtube.com/vi/${id}/hqdefault.jpg`:"";
+}
+
+function qualifiedRecords(level){
+const min=Number(level.minimumPercentage||0);
+return (level.records||[]).filter(r=>r && r.name && Number(r.percentage)>=min && r.verified!==false);
+}
+
+function allRecordsForUser(name){
+const found=[];
+for(const level of data.levels||[]){
+for(const record of qualifiedRecords(level)){
+if(record.name===name)found.push({level,record});
+}
+}
+return found;
+}
+
+function renderLevelList(){
+const q=search.value.trim().toLowerCase();
+const levels=(data.levels||[]).filter(l=>!q||`${l.name} ${l.creator} ${l.id}`.toLowerCase().includes(q)).sort((a,b)=>Number(a.placement)-Number(b.placement));
+levelList.innerHTML=`<div class="side-title">Levels</div>`+levels.map(level=>`
+<button class="level-item ${selectedLevel&&selectedLevel.id===level.id?"active":""}" data-id="${escapeHtml(level.id)}">
+<span class="level-rank">#${escapeHtml(level.placement)}</span><span class="level-name">${escapeHtml(level.name)}</span>
+</button>`).join("");
+levelList.querySelectorAll(".level-item").forEach(btn=>btn.addEventListener("click",()=>showLevel(btn.dataset.id)));
+}
+
+function showLevel(id){
+selectedLevel=(data.levels||[]).find(l=>String(l.id)===String(id));
+if(!selectedLevel)return;
+listView.style.display="block";leaderboardView.classList.remove("show");profileView.classList.remove("show");
+document.getElementById("levelTitle").textContent=selectedLevel.name;
+document.getElementById("levelMeta").innerHTML=`<span class="pill">Creator: <b>${escapeHtml(selectedLevel.creator)}</b></span>`;
+document.getElementById("placement").textContent=`#${selectedLevel.placement}`;
+document.getElementById("levelId").textContent=selectedLevel.id;
+document.getElementById("points").textContent=selectedLevel.points;
+document.getElementById("creator").textContent=selectedLevel.creator;
+document.getElementById("minimum").textContent=`Minimum Percentage: ${selectedLevel.minimumPercentage}%`;
+const img=document.getElementById("thumbnail");img.src=thumbnailFor(selectedLevel);img.alt=selectedLevel.name+" thumbnail";
+const records=qualifiedRecords(selectedLevel);
+document.getElementById("records").innerHTML=records.length?records.map(r=>`
+<div class="record">
+<a class="record-name" href="#" data-video="${escapeHtml(r.video||"")}" data-name="${escapeHtml(r.name)}">${escapeHtml(r.name)}</a>
+<span class="percent">${escapeHtml(r.percentage)}%</span>
+<span class="verified">Verified</span>
+</div>`).join(""):`<div class="empty">No qualifying records yet.</div>`;
+document.querySelectorAll(".record-name").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();openVideo(a.dataset.video,a.dataset.name+" — "+selectedLevel.name)}));
+renderLevelList();
+window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function renderLeaderboard(){
+const managed=(leaderboard.users||[]).map(u=>({name:u.name,points:Number(u.points||0),placement:Number(u.placement||999999),managed:true}));
+const managedNames=new Set(managed.map(u=>u.name));
+const recordUsers=new Map();
+for(const level of data.levels||[]){
+for(const r of qualifiedRecords(level)){
+if(!recordUsers.has(r.name))recordUsers.set(r.name,0);
+recordUsers.set(r.name,recordUsers.get(r.name)+Number(level.points||0));
+}
+}
+const extras=[...recordUsers.entries()].filter(([name])=>!managedNames.has(name)).map(([name,points],i)=>({name,points,placement:managed.length+i+1,managed:false}));
+const rows=[...managed,...extras].sort((a,b)=>a.placement-b.placement);
+document.getElementById("leaderboardRows").innerHTML=rows.length?rows.map(u=>{
+const recs=allRecordsForUser(u.name).length;
+return `<tr><td class="rank">#${u.placement}</td><td><a class="user-link" href="#" data-user="${escapeHtml(u.name)}">${escapeHtml(u.name)}</a></td><td>${u.points}</td><td>${recs}</td></tr>`;
+}).join(""):`<tr><td colspan="4">No users yet.</td></tr>`;
+document.querySelectorAll(".user-link").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();showProfile(a.dataset.user)}));
+}
+
+function showLeaderboard(){
+listView.style.display="none";profileView.classList.remove("show");leaderboardView.classList.add("show");renderLeaderboard();window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showProfile(name){
+const records=allRecordsForUser(name);
+const managed=(leaderboard.users||[]).find(u=>u.name===name);
+const points=managed?Number(managed.points||0):records.reduce((sum,x)=>sum+Number(x.level.points||0),0);
+const placement=managed?`#${managed.placement}`:"Unranked";
+document.getElementById("profileName").textContent=name;
+document.getElementById("profilePoints").textContent=points;
+document.getElementById("profileRecords").textContent=records.length;
+document.getElementById("profilePlacement").textContent=placement;
+document.getElementById("profileRecordList").innerHTML=records.length?records.map(x=>`
+<div class="record">
+<a class="record-name" href="#" data-video="${escapeHtml(x.record.video||"")}" data-name="${escapeHtml(name+" — "+x.level.name)}">${escapeHtml(x.level.name)}</a>
+<span class="percent">${escapeHtml(x.record.percentage)}%</span><span class="verified">Verified</span>
+</div>`).join(""):`<div class="empty">No qualifying records.</div>`;
+document.querySelectorAll("#profileRecordList .record-name").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();openVideo(a.dataset.video,a.dataset.name)}));
+listView.style.display="none";leaderboardView.classList.remove("show");profileView.classList.add("show");window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function openVideo(url,title){
+const id=getVideoId(url);
+if(!id){window.open(url||"#","_blank","noopener");return}
+document.getElementById("modalTitle").textContent=title||"Video";
+document.getElementById("modalNote").textContent="Verified submission";
+document.getElementById("videoFrame").src=`https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0`;
+document.getElementById("videoModal").classList.add("open");
+}
+function closeVideo(){document.getElementById("videoFrame").src="";document.getElementById("videoModal").classList.remove("open")}
+document.getElementById("watchButton").addEventListener("click",()=>openVideo(selectedLevel?.video,selectedLevel?.name));
+document.getElementById("cover").addEventListener("click",()=>openVideo(selectedLevel?.video,selectedLevel?.name));
+document.getElementById("closeModal").addEventListener("click",closeVideo);
+document.getElementById("videoModal").addEventListener("click",e=>{if(e.target.id==="videoModal")closeVideo()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeVideo()});
+document.getElementById("leaderboardTab").addEventListener("click",showLeaderboard);
+document.getElementById("listTab").addEventListener("click",()=>{if(selectedLevel)showLevel(selectedLevel.id)});
+search.addEventListener("input",renderLevelList);
+document.getElementById("brandHome").addEventListener("click",e=>{e.preventDefault();if(selectedLevel)showLevel(selectedLevel.id)});
+
+function escapeHtml(value){
+return String(value??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+loadJSON().catch(err=>{
+document.getElementById("levelTitle").textContent="Data could not be loaded";
+document.getElementById("records").innerHTML=`<div class="empty">${escapeHtml(err.message)}. Put this page and the JSON files on the same web host.</div>`;
+});
+</script>
+</body>
+</html>

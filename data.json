@@ -1,0 +1,21 @@
+{
+  "levels": [
+    {
+      "id": "147734750",
+      "name": "PURBLIC CHAIR",
+      "creator": "no",
+      "placement": 1,
+      "points": 420,
+      "minimumPercentage": 100,
+      "video": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "records": [
+        {
+          "name": "no",
+          "percentage": 100,
+          "verified": true,
+          "video": "https://youtu.be/dQw4w9WgXcQ?si=R39zpH6UXf3W-a85"
+        }
+      ]
+    }
+  ]
+}
