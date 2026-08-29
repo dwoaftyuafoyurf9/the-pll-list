@@ -4,18 +4,28 @@
       "id": "147786024",
       "name": "PURBLIC FEMBOY",
       "creator": "no",
-      "placement": 1,
-      "points": 420,
-      "minimumPercentage": 80,
+      "placement": 2,
+      "points": 210,
+      "minimumPercentage": 100,
       "video": "https://youtu.be/WIjuyPd3kck?si=Sp4oowUslaLUSU1o",
       "records": [
         {
           "name": "no",
           "percentage": 100,
           "verified": true,
-          "video": "https://youtu.be/QDia3e12czc?si=Q6q2LbaJpdsaF9wk"
+          "video": "https://youtu.be/WIjuyPd3kck?si=Sp4oowUslaLUSU1o"
         }
       ]
+    },
+    {
+      "id": "147914562",
+      "name": "Sakupen Purblic",
+      "creator": "AIRTERRA",
+      "placement": 1,
+      "points": 420,
+      "minimumPercentage": 65,
+      "video": "https://youtu.be/6VmVsGXG2H0?si=y_V7oq7SMko6zGtw",
+      "records": []
     }
   ]
 }
