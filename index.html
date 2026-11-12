@@ -1,41 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PLL List</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            background: #000;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            font-family: Arial, Helvetica, sans-serif;
-            text-align: center;
-        }
-
-        .message {
-            font-size: 24px;
-            font-weight: 500;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09070d">
+  <meta name="description" content="Browse the Purblic Level List and its player leaderboard.">
+  <title>Purblic Level List</title>
+  <link rel="icon" href="1000094201.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #09070d;
+      --panel: #100d16;
+      --panel-raised: #17121f;
+      --line: rgba(255,255,255,.075);
+      --text: #f7f3fb;
+      --muted: #9c93a8;
+      --purple: #a76bff;
+      --purple-bright: #c59aff;
+      --purple-soft: rgba(167,107,255,.14);
+      --green: #83e6bd;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--bg); scroll-behavior: smooth; }
+    body { margin: 0; min-height: 100vh; color: var(--text); background: radial-gradient(ellipse at 68% 0%, rgba(108,50,157,.15), transparent 40%), var(--bg); font-family: 'DM Sans', sans-serif; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+    .topbar { height: 76px; display:flex; align-items:center; gap:14px; padding: 0 clamp(16px,4vw,48px); border-bottom:1px solid var(--line); background:rgba(9,7,13,.9); position:sticky; top:0; z-index:5; backdrop-filter:blur(16px); }
+    .brand { display:flex; align-items:center; gap:13px; font:700 20px 'Space Grotesk',sans-serif; letter-spacing:-.5px; }
+    .brand img { width:42px; height:42px; border-radius:12px; object-fit:cover; background:linear-gradient(145deg,#32164e,#a76bff); border:1px solid rgba(255,255,255,.14); }
+    .brand-mark { width:42px; height:42px; display:none; place-items:center; border-radius:12px; color:#fff; font:800 17px 'Space Grotesk',sans-serif; background:linear-gradient(145deg,#32164e,#a76bff); }
+    .brand-tag { color:var(--purple-bright); font-size:11px; letter-spacing:1.6px; text-transform:uppercase; margin-left:3px; }
+    .top-actions { margin-left:auto; display:flex; gap:9px; }
+    .nav-button { border:1px solid var(--line); background:#121019; padding:9px 14px; border-radius:10px; color:#c8bfd1; cursor:pointer; font-size:13px; transition:.2s; }
+    .nav-button:hover,.nav-button.active { color:white; border-color:rgba(167,107,255,.45); background:var(--purple-soft); }
+    .layout { display:grid; grid-template-columns: minmax(290px, 365px) minmax(0,1fr); min-height:calc(100vh - 76px); }
+    .sidebar { border-right:1px solid var(--line); background:rgba(15,12,19,.78); min-height:calc(100vh - 76px); display:flex; flex-direction:column; }
+    .side-head { padding:25px 20px 15px; }
+    .side-title-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+    .eyebrow { color:var(--muted); font-size:11px; font-weight:800; letter-spacing:1.6px; text-transform:uppercase; }
+    .count { color:var(--purple-bright); background:var(--purple-soft); border:1px solid rgba(167,107,255,.18); padding:5px 9px; border-radius:999px; font-size:11px; }
+    .search-wrap { position:relative; }
+    .search-wrap span { position:absolute; left:13px; top:10px; color:#887d94; font-size:18px; }
+    .search { width:100%; color:var(--text); outline:none; background:#0a080e; border:1px solid var(--line); border-radius:10px; padding:12px 12px 12px 39px; }
+    .search:focus { border-color:rgba(167,107,255,.65); box-shadow:0 0 0 3px rgba(167,107,255,.1); }
+    .level-list { padding:0 10px 24px; overflow:auto; max-height:calc(100vh - 190px); scrollbar-color:#39264d transparent; }
+    .level-row { width:100%; display:grid; grid-template-columns:38px 41px minmax(0,1fr); gap:8px; align-items:center; text-align:left; border:1px solid transparent; border-bottom-color:rgba(255,255,255,.045); background:transparent; padding:11px 10px; cursor:pointer; border-radius:9px; min-height:62px; transition:background .16s,border .16s; }
+    .level-row:hover { background:rgba(255,255,255,.035); }
+    .level-row.selected { background:linear-gradient(100deg,rgba(137,74,213,.2),rgba(67,39,89,.1)); border-color:rgba(167,107,255,.22); }
+    .rank { color:var(--purple-bright); font:700 14px 'Space Grotesk',sans-serif; }
+    .level-emblem { width:30px; height:30px; display:grid; place-items:center; border-radius:9px; font-size:15px; background:linear-gradient(145deg,#271635,#17111e); border:1px solid rgba(167,107,255,.16); }
+    .level-copy { min-width:0; }
+    .level-name { display:block; font-size:13px; font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .level-creator { display:block; margin-top:3px; color:var(--muted); font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .empty-note { color:#746b7d; font-size:11px; font-weight:500; }
+    .main { padding: clamp(24px,5vw,58px); min-width:0; max-width:1100px; width:100%; margin:0 auto; }
+    .main-heading { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:25px; gap:18px; }
+    .main-heading h1 { font:700 clamp(23px,3.2vw,34px) 'Space Grotesk',sans-serif; margin:7px 0 0; letter-spacing:-1px; }
+    .main-heading p { color:var(--muted); margin:7px 0 0; font-size:13px; }
+    .pill { white-space:nowrap; padding:8px 12px; border:1px solid rgba(167,107,255,.2); border-radius:999px; color:var(--purple-bright); background:var(--purple-soft); font-size:12px; font-weight:700; }
+    .detail-grid { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(250px,.8fr); gap:18px; align-items:start; }
+    .card { border:1px solid var(--line); border-radius:15px; background:linear-gradient(145deg,rgba(24,18,31,.96),rgba(14,11,18,.96)); box-shadow:0 18px 50px rgba(0,0,0,.2); overflow:hidden; }
+    .level-hero { padding:24px; display:flex; align-items:center; gap:18px; }
+    .hero-icon { flex:0 0 64px; height:64px; display:grid; place-items:center; border-radius:17px; background:linear-gradient(145deg,#37204b,#17101f); border:1px solid rgba(197,154,255,.23); font-size:28px; }
+    .hero-content { min-width:0; }
+    .hero-rank { color:var(--purple-bright); font:700 14px 'Space Grotesk',sans-serif; }
+    .hero-content h2 { margin:4px 0 8px; font:700 clamp(22px,3vw,30px) 'Space Grotesk',sans-serif; line-height:1.14; overflow-wrap:anywhere; }
+    .creator-line { color:var(--muted); font-size:13px; }
+    .creator-line strong { color:#eee7f5; }
+    .video-frame { width:100%; aspect-ratio:16/9; display:block; border:0; background:#050407; }
+    .video-placeholder { aspect-ratio:16/9; display:grid; place-items:center; text-align:center; color:var(--muted); background:radial-gradient(circle at center,rgba(114,65,161,.18),transparent 55%),#08060b; }
+    .video-placeholder a { color:var(--purple-bright); text-decoration:none; }
+    .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid var(--line); }
+    .stat { text-align:center; padding:20px 12px; }
+    .stat + .stat { border-left:1px solid var(--line); }
+    .stat-label { display:block; color:var(--muted); font-size:10px; letter-spacing:1.5px; font-weight:800; text-transform:uppercase; }
+    .stat-value { display:block; margin-top:8px; font:700 clamp(20px,3vw,26px) 'Space Grotesk',sans-serif; overflow-wrap:anywhere; }
+    .stat-value.accent { color:var(--purple-bright); }
+    .section-card { padding:21px; }
+    .section-card h3 { margin:0 0 17px; font:700 15px 'Space Grotesk',sans-serif; }
+    .info-list { display:grid; gap:0; }
+    .info-item { display:flex; justify-content:space-between; gap:15px; padding:12px 0; border-top:1px solid var(--line); font-size:13px; }
+    .info-item span { color:var(--muted); }
+    .info-item strong { text-align:right; overflow-wrap:anywhere; }
+    .records-card { margin-top:18px; }
+    .records-head { display:flex; justify-content:space-between; align-items:center; }
+    .record-count { color:var(--muted); font-size:12px; }
+    .record { display:grid; grid-template-columns:minmax(0,1fr) auto auto; align-items:center; gap:14px; padding:13px 0; border-top:1px solid var(--line); font-size:13px; }
+    .record a { color:var(--purple-bright); text-decoration:none; }
+    .verified { color:var(--green); font-size:11px; }
+    .no-records { padding:16px 0 2px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+    .leaderboard-view { display:none; }
+    .leaderboard-table { width:100%; border-collapse:collapse; text-align:left; }
+    .leaderboard-table th { padding:13px 16px; color:var(--muted); font-size:10px; letter-spacing:1.4px; text-transform:uppercase; }
+    .leaderboard-table td { border-top:1px solid var(--line); padding:16px; font-size:14px; }
+    .leaderboard-table tr:hover td { background:rgba(255,255,255,.02); }
+    .leaderboard-rank { color:var(--purple-bright); font:700 15px 'Space Grotesk',sans-serif; }
+    .points { color:var(--purple-bright); font:700 15px 'Space Grotesk',sans-serif; }
+    .empty-state { padding:28px 16px; text-align:center; color:var(--muted); }
+    .footer-note { color:#706779; text-align:center; font-size:11px; margin-top:30px; }
+    @media (max-width:760px) {
+      .topbar { height:66px; padding:0 15px; }
+      .brand { gap:9px; font-size:17px; }
+      .brand img,.brand-mark { width:37px; height:37px; }
+      .brand-tag { display:none; }
+      .top-actions { gap:6px; }
+      .nav-button { padding:8px 10px; font-size:12px; }
+      .layout { display:flex; flex-direction:column; min-height:calc(100vh - 66px); }
+      .sidebar { min-height:0; border-right:0; border-bottom:1px solid var(--line); }
+      .side-head { padding:17px 15px 11px; }
+      .side-title-row { margin-bottom:11px; }
+      .level-list { display:flex; overflow-x:auto; overflow-y:hidden; max-height:none; padding:0 11px 12px; gap:7px; scrollbar-width:thin; }
+      .level-row { flex:0 0 205px; grid-template-columns:31px 30px minmax(0,1fr); min-height:58px; padding:8px; border:1px solid var(--line); }
+      .level-emblem { width:27px; height:27px; }
+      .main { padding:23px 15px 36px; }
+      .detail-grid { grid-template-columns:1fr; }
+      .main-heading { margin-bottom:17px; }
+      .section-card { padding:17px; }
+      .records-card { margin-top:14px; }
+    }
+    @media (max-width:420px) {
+      .top-actions .nav-button { padding:8px; }
+      .level-hero { padding:18px; gap:13px; }
+      .hero-icon { flex-basis:50px; height:50px; font-size:23px; border-radius:14px; }
+      .record { grid-template-columns:minmax(0,1fr) auto; }
+      .record .verified { grid-column:2; }
+      .leaderboard-table th,.leaderboard-table td { padding:12px 10px; }
+    }
+  </style>
 </head>
 <body>
-    <div class="message">
-        PLL List has been closed.<br>
-        DM @zonkfromtemu on Discord to know why.
+  <header class="topbar">
+    <div class="brand">
+      <img src="1000094201.png" alt="Purblic Level List icon" onerror="this.style.display='none';this.nextElementSibling.style.display='grid'">
+      <span class="brand-mark" aria-hidden="true">PL</span>
+      <span>Purblic Level List</span><span class="brand-tag">Community list</span>
     </div>
+    <nav class="top-actions" aria-label="Main navigation">
+      <button class="nav-button active" id="levelsTab" type="button">Levels</button>
+      <button class="nav-button" id="leaderboardTab" type="button">Leaderboard</button>
+    </nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Level list">
+      <div class="side-head">
+        <div class="side-title-row"><span class="eyebrow">Demon list</span><span class="count" id="levelCount">0 levels</span></div>
+        <label class="search-wrap"><span aria-hidden="true">⌕</span><input id="search" class="search" type="search" placeholder="Search levels..." aria-label="Search levels"></label>
+      </div>
+      <div class="level-list" id="levelList" aria-live="polite"></div>
+    </aside>
+    <main class="main">
+      <section id="levelView">
+        <div class="main-heading">
+          <div><div class="eyebrow">The Purblic Level List</div><h1 id="pageTitle">Loading levels...</h1><p id="pageSubtitle">Choose a level to see its details and records.</p></div>
+          <span class="pill">✦ &nbsp;Levels 1–150</span>
+        </div>
+        <div id="levelDetails"></div>
+      </section>
+      <section id="leaderboardView" class="leaderboard-view">
+        <div class="main-heading"><div><div class="eyebrow">Community rankings</div><h1>Player leaderboard</h1><p>Points earned from verified level completions.</p></div><span class="pill">♛ &nbsp;Rankings</span></div>
+        <div class="card"><table class="leaderboard-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody id="leaderboardBody"></tbody></table><div class="empty-state" id="leaderboardEmpty" hidden>No leaderboard entries yet.</div></div>
+      </section>
+      <p class="footer-note">Purblic Level List · Community-made Geometry Dash demonlist</p>
+    </main>
+  </div>
+  <script>
+    const levelList = document.getElementById('levelList');
+    const levelDetails = document.getElementById('levelDetails');
+    const searchInput = document.getElementById('search');
+    const levels = [];
+    let selectedPlacement = null;
+
+    function escapeHTML(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    }
+    function youtubeEmbed(url) {
+      if (!url) return null;
+      try {
+        const parsed = new URL(url);
+        let id = '';
+        if (parsed.hostname.includes('youtu.be')) id = parsed.pathname.slice(1);
+        else if (parsed.hostname.includes('youtube.com')) id = parsed.searchParams.get('v') || parsed.pathname.split('/').filter(Boolean).pop();
+        return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}` : null;
+      } catch { return null; }
+    }
+    function renderList(filter = '') {
+      const query = filter.trim().toLowerCase();
+      levelList.innerHTML = '';
+      for (let rank = 1; rank <= 150; rank++) {
+        const level = levels.find(item => Number(item.placement) === rank);
+        const name = level?.name || `Level #${rank}`;
+        const creator = level?.creator || '';
+        if (query && !`${name} ${creator} ${rank} ${level?.id || ''}`.toLowerCase().includes(query)) continue;
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `level-row${selectedPlacement === rank ? ' selected' : ''}`;
+        button.setAttribute('aria-label', level ? `View #${rank}, ${name}` : `No level listed at #${rank}`);
+        button.innerHTML = `<span class="rank">#${rank}</span><span class="level-emblem" aria-hidden="true">${level ? '◈' : '·'}</span><span class="level-copy"><span class="level-name">${escapeHTML(name)}</span><span class="level-creator">${level ? `by ${escapeHTML(creator || 'Unknown')}` : '<span class="empty-note">Awaiting a level</span>'}</span></span>`;
+        if (level) button.addEventListener('click', () => selectLevel(rank));
+        else button.disabled = true;
+        levelList.appendChild(button);
+      }
+    }
+    function selectLevel(rank) {
+      const level = levels.find(item => Number(item.placement) === rank);
+      if (!level) return;
+      selectedPlacement = rank;
+      renderList(searchInput.value);
+      document.getElementById('pageTitle').textContent = level.name;
+      document.getElementById('pageSubtitle').textContent = `Rank #${rank} · Created by ${level.creator || 'Unknown'}`;
+      const video = youtubeEmbed(level.video);
+      const records = Array.isArray(level.records) ? level.records : [];
+      levelDetails.innerHTML = `<div class="detail-grid">
+        <div>
+          <article class="card">
+            <div class="level-hero"><div class="hero-icon" aria-hidden="true">◈</div><div class="hero-content"><span class="hero-rank">#${rank} · PURBLIC DEMON</span><h2>${escapeHTML(level.name)}</h2><div class="creator-line">Creator: <strong>${escapeHTML(level.creator || 'Unknown')}</strong></div></div></div>
+            ${video ? `<iframe class="video-frame" src="${video}" title="${escapeHTML(level.name)} gameplay video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>` : `<div class="video-placeholder">No video provided for this level.</div>`}
+            <div class="stats"><div class="stat"><span class="stat-label">Points for completion</span><span class="stat-value accent">${escapeHTML(level.points ?? '—')}</span></div><div class="stat"><span class="stat-label">Level ID</span><span class="stat-value">${escapeHTML(level.id || 'N/A')}</span></div></div>
+          </article>
+          <article class="card section-card records-card"><div class="records-head"><h3>Completion records</h3><span class="record-count">${records.length} ${records.length === 1 ? 'record' : 'records'}</span></div>${records.length ? records.map(record => `<div class="record"><strong>${escapeHTML(record.name || 'Unknown')}</strong><span>${escapeHTML(record.percentage ?? '—')}%</span><span class="verified">${record.verified ? '✓ Verified' : 'Unverified'}</span>${record.video ? `<a href="${escapeHTML(record.video)}" target="_blank" rel="noopener noreferrer">Watch ↗</a>` : '<span></span>'}</div>`).join('') : '<div class="no-records">No completion records have been submitted yet.</div>'}</article>
+        </div>
+        <aside class="card section-card"><h3>Level information</h3><div class="info-list"><div class="info-item"><span>List placement</span><strong>#${rank}</strong></div><div class="info-item"><span>Creator</span><strong>${escapeHTML(level.creator || 'Unknown')}</strong></div><div class="info-item"><span>Points</span><strong>${escapeHTML(level.points ?? '—')}</strong></div><div class="info-item"><span>Minimum completion</span><strong>${escapeHTML(level.minimumPercentage ?? '—')}%</strong></div><div class="info-item"><span>Level ID</span><strong>${escapeHTML(level.id || 'N/A')}</strong></div></div></aside>
+      </div>`;
+    }
+    function showView(view) {
+      const leaderboard = view === 'leaderboard';
+      document.getElementById('levelView').style.display = leaderboard ? 'none' : 'block';
+      document.getElementById('leaderboardView').style.display = leaderboard ? 'block' : 'none';
+      document.getElementById('levelsTab').classList.toggle('active', !leaderboard);
+      document.getElementById('leaderboardTab').classList.toggle('active', leaderboard);
+      document.querySelector('.sidebar').style.display = leaderboard ? 'none' : 'flex';
+    }
+    async function loadData() {
+      try {
+        const [levelsResponse, leaderboardResponse] = await Promise.all([fetch('data.json'), fetch('leaderboard.json')]);
+        if (!levelsResponse.ok || !leaderboardResponse.ok) throw new Error('Could not load list data.');
+        const data = await levelsResponse.json();
+        const leaderboard = await leaderboardResponse.json();
+        levels.push(...(Array.isArray(data.levels) ? data.levels : []));
+        levels.sort((a,b) => Number(a.placement) - Number(b.placement));
+        document.getElementById('levelCount').textContent = `${levels.length} ${levels.length === 1 ? 'level' : 'levels'}`;
+        renderList();
+        if (levels.length) selectLevel(Number(levels[0].placement) || 1);
+        const users = Array.isArray(leaderboard.users) ? leaderboard.users : [];
+        const body = document.getElementById('leaderboardBody');
+        users.sort((a,b) => Number(a.placement) - Number(b.placement)).forEach((user, index) => {
+          const row = document.createElement('tr');
+          row.innerHTML = `<td class="leaderboard-rank">#${escapeHTML(user.placement ?? index + 1)}</td><td><strong>${escapeHTML(user.name || 'Unknown')}</strong></td><td class="points">${escapeHTML(user.points ?? 0)}</td>`;
+          body.appendChild(row);
+        });
+        document.getElementById('leaderboardEmpty').hidden = users.length > 0;
+      } catch (error) {
+        document.getElementById('pageTitle').textContent = 'Could not load the list';
+        document.getElementById('pageSubtitle').textContent = 'Please check that data.json and leaderboard.json are available.';
+      }
+    }
+    searchInput.addEventListener('input', event => renderList(event.target.value));
+    document.getElementById('levelsTab').addEventListener('click', () => showView('levels'));
+    document.getElementById('leaderboardTab').addEventListener('click', () => showView('leaderboard'));
+    loadData();
+  </script>
 </body>
 </html>
