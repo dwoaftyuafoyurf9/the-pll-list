@@ -1,761 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#09070d">
+  <meta name="description" content="Browse the Purblic Level List and player leaderboard.">
   <title>Purblic Level List</title>
-  <link rel="icon" href="1000094201.png" />
+  <link rel="icon" href="1000094201.png">
   <style>
-    :root{
-      --bg:#090b12;
-      --bg-2:#0d1220;
-      --panel:#111827;
-      --panel-2:#0c1424;
-      --line:rgba(255,255,255,.08);
-      --text:#eef2ff;
-      --muted:#9aa7c2;
-      --purple:#5d7ef5;
-      --purple-2:#8e7ef9;
-      --purple-3:#3a4fd6;
-      --shadow:rgba(52,60,121,.5);
-    }
-
-    *{box-sizing:border-box}
-    html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
-    body{
-      background:
-        radial-gradient(circle at 20% 0%, rgba(91,100,255,.18), transparent 24%),
-        radial-gradient(circle at 80% 10%, rgba(145,110,255,.12), transparent 30%),
-        var(--bg);
-    }
-
-    .app{
-      max-width: 1500px;
-      margin: 0 auto;
-      min-height: 100vh;
-      padding: 16px 20px 28px;
-    }
-
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:18px;
-      padding: 14px 18px 18px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      margin-bottom: 18px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      font-weight:800;
-      font-size: clamp(1.7rem, 2vw, 2.5rem);
-      letter-spacing:-.04em;
-    }
-
-    .brand-icon{
-      width:42px;height:42px;border-radius:12px;
-      background:linear-gradient(135deg,#1c2b47,#4b81d9);
-      border:1px solid rgba(255,255,255,.12);
-      display:grid;place-items:center;
-      box-shadow:0 0 25px rgba(87,138,255,.3);
-      font-size:18px;font-weight:700;
-    }
-
-    .subtitle{
-      font-size: 12px;
-      color: var(--muted);
-      margin-left:8px;
-      letter-spacing:.12em;
-      text-transform:uppercase;
-      opacity:.8;
-    }
-
-    .nav{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .nav button{
-      border:1px solid var(--line);
-      background:#101821;
-      color:var(--text);
-      padding:10px 16px;
-      border-radius:10px;
-      font-weight:700;
-      cursor:pointer;
-      transition:.15s ease;
-    }
-
-    .nav button:hover, .nav button.active{
-      background:linear-gradient(180deg,#20315a,#152544);
-      border-color: rgba(135,150,255,.6);
-      box-shadow: inset 0 0 0 1px rgba(169,186,255,.18);
-    }
-
-    .layout{
-      display:grid;
-      grid-template-columns: 360px minmax(0,1fr);
-      gap: 0;
-      border:1px solid var(--line);
-      border-radius:18px;
-      overflow:hidden;
-      background:rgba(14,17,24,.8);
-      box-shadow:0 28px 60px rgba(0,0,0,.28);
-    }
-
-    .sidebar{
-      background:linear-gradient(180deg,#0a1019,#0a1018);
-      border-right:1px solid var(--line);
-      min-height: 760px;
-    }
-
-    .side-header{
-      display:flex;align-items:center;justify-content:space-between;
-      padding: 20px 18px 14px;
-      gap:12px;
-    }
-
-    .side-header .tab{
-      flex:1;
-      background:linear-gradient(180deg,#1d2d55,#122a4d);
-      color:#eaf2ff;
-      border:1px solid rgba(117,140,255,.35);
-      border-radius:10px;
-      padding:12px 14px;
-      font-weight:800;
-      cursor:pointer;
-      text-align:center;
-    }
-
-    .side-header .close{
-      width:38px;height:38px;border-radius:10px;
-      border:1px solid var(--line);
-      background:#0f1727;
-      color: var(--text);
-      font-size: 26px;
-      cursor:pointer;
-    }
-
-    .search-wrap{
-      padding: 0 16px 14px;
-    }
-
-    .search{
-      width:100%;
-      padding: 14px 16px 14px 42px;
-      border-radius:12px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.02);
-      color: var(--text);
-      font-size: 1.05rem;
-      outline:none;
-    }
-
-    .search::placeholder{ color:#8997b5; }
-
-    .level-list{
-      max-height: 680px;
-      overflow:auto;
-      padding: 0 10px 20px;
-    }
-
-    .level-item{
-      width:100%;
-      display:grid;
-      grid-template-columns: 42px 34px minmax(0,1fr);
-      align-items:center;
-      gap:10px;
-      background:transparent;
-      border:1px solid transparent;
-      border-radius:12px;
-      color:var(--text);
-      padding: 12px 10px;
-      margin-bottom:5px;
-      text-align:left;
-      cursor:pointer;
-      transition:.15s ease;
-    }
-
-    .level-item:hover{
-      background: rgba(255,255,255,.02);
-    }
-
-    .level-item.selected{
-      background:linear-gradient(90deg, rgba(94,111,255,.14), rgba(255,255,255,.02));
-      border-color: rgba(124,139,255,.28);
-      box-shadow: inset 0 0 0 1px rgba(82,98,255,.16);
-    }
-
-    .rank{
-      color:#bfd3ff;
-      font-weight:800;
-      font-size:1.3rem;
-      margin-left:8px;
-    }
-
-    .mini-icon{
-      width:30px;height:30px;border-radius:10px;
-      background:linear-gradient(135deg,#2d3556,#151d2d);
-      display:grid;place-items:center;
-      border:1px solid rgba(255,255,255,.08);
-      font-size:13px;
-      color:#dfe9ff;
-    }
-
-    .level-main{
-      min-width:0;
-    }
-
-    .level-name{
-      display:block;
-      font-size:1.15rem;
-      font-weight:800;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .level-author{
-      display:block;
-      color:var(--muted);
-      font-size:.88rem;
-      margin-top:3px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .content{
-      background:rgba(8,12,20,.82);
-      padding: 28px 26px 24px;
-      min-width:0;
-    }
-
-    .title-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:18px;
-    }
-
-    .big-title{
-      font-size: clamp(2rem,2.4vw,3.2rem);
-      font-weight:900;
-      letter-spacing:-.05em;
-      margin:0;
-    }
-
-    .record-badge{
-      background:rgba(255,255,255,.02);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:12px;
-      padding:10px 14px;
-      font-weight:700;
-      color:#dfe9ff;
-      display:inline-flex;align-items:center;gap:8px;
-      white-space:nowrap;
-    }
-
-    .detail-card{
-      background:rgba(9,13,23,.9);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:20px 18px 0;
-      box-shadow:0 22px 35px rgba(3,5,10,.28);
-    }
-
-    .meta-row{
-      display:flex;
-      align-items:center;
-      gap:18px;
-      margin-bottom:18px;
-    }
-
-    .big-icon{
-      width:82px;height:82px;border-radius:22px;
-      background:linear-gradient(135deg,#32214d,#171a2a);
-      border:1px solid rgba(145,118,255,.35);
-      display:grid;place-items:center;
-      font-size:2rem;
-      box-shadow:inset 0 0 18px rgba(139,109,255,.15);
-    }
-
-    .meta-text{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    .meta-text .block{
-      font-size:2.2rem;
-      font-weight:900;
-      letter-spacing:-.04em;
-      line-height:1.1;
-    }
-
-    .meta-text .byline{
-      font-size:1rem;
-      color:var(--muted);
-    }
-
-    .video{
-      width:100%;
-      display:block;
-      aspect-ratio: 16 / 9;
-      border-radius: 14px;
-      background:
-        linear-gradient(180deg, rgba(90,150,255,.18), rgba(90,150,255,.05)),
-        linear-gradient(135deg,#0a1225,#101a2d);
-      border:1px solid rgba(255,255,255,.08);
-      margin-top: 8px;
-      overflow:hidden;
-    }
-
-    .video iframe{
-      width:100%;
-      height:100%;
-      border:0;
-      display:block;
-      background:#000;
-    }
-
-    .stats{
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 16px;
-      margin-top: 18px;
-      padding: 0 0 16px;
-    }
-
-    .stat{
-      background: rgba(255,255,255,.012);
-      border:1px solid var(--line);
-      border-radius: 12px;
-      padding: 18px 16px 14px;
-      min-height: 108px;
-    }
-
-    .stat-label{
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      font-size:.7rem;
-      display:block;
-      margin-bottom:10px;
-      text-align:center;
-    }
-
-    .stat-value{
-      display:block;
-      text-align:center;
-      font-size: clamp(1.8rem,2vw,2.7rem);
-      font-weight:900;
-      letter-spacing:-.05em;
-      color:#dff3ff;
-    }
-
-    .side-info{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 18px;
-      padding-bottom:18px;
-    }
-
-    .fact{
-      background: rgba(255,255,255,.012);
-      border:1px solid var(--line);
-      border-radius: 12px;
-      padding: 14px 16px;
-    }
-
-    .fact .lbl{
-      display:block;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      font-size: .68rem;
-      margin-bottom: 8px;
-    }
-
-    .fact .val{
-      font-weight:900;
-      font-size: 1.35rem;
-    }
-
-    .records{
-      margin-top: 18px;
-      border-top:1px solid var(--line);
-      padding-top: 14px;
-    }
-
-    .records-header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom: 10px;
-    }
-
-    .record-item{
-      display:grid;
-      grid-template-columns: 1fr auto auto;
-      align-items:center;
-      gap: 10px;
-      border-top:1px solid var(--line);
-      padding: 12px 0;
-    }
-
-    .record-item .name{
-      font-weight:700;
-      font-size:1rem;
-    }
-
-    .record-item .pct{
-      color: var(--muted);
-      font-weight:700;
-    }
-
-    .record-item .status{
-      color: #8deab9;
-      font-weight:700;
-      font-size: .82rem;
-    }
-
-    .record-item a{
-      color:#a9b8ff;
-      text-decoration:none;
-      font-weight:700;
-      font-size: .8rem;
-    }
-
-    .leaderboard-wrap{
-      display:none;
-    }
-
-    .leaderboard-table{
-      width:100%;
-      border-collapse:collapse;
-      background:rgba(9,13,23,.9);
-      border:1px solid var(--line);
-      border-radius:16px;
-      overflow:hidden;
-    }
-
-    .leaderboard-table th, .leaderboard-table td{
-      padding: 14px 18px;
-      border-bottom:1px solid var(--line);
-      text-align:left;
-    }
-
-    .leaderboard-table th{
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:.15em;
-      font-size:.7rem;
-      font-weight:800;
-    }
-
-    .leaderboard-table td{
-      font-size:1.05rem;
-    }
-
-    @media (max-width: 980px){
-      .layout{grid-template-columns:1fr;}
-      .sidebar{border-right:none;border-bottom:1px solid var(--line);}
-      .content{padding:18px 16px 22px;}
-      .level-list{max-height:420px;}
-      .title-row{flex-direction:column;align-items:flex-start;}
-      .topbar{flex-wrap:wrap;}
-    }
-
-    @media (max-width: 560px){
-      .app{padding:12px 10px 18px;}
-      .brand{font-size:1.35rem;}
-      .brand .subtitle{display:none;}
-      .nav{width:100%;}
-      .nav button{flex:1;}
-      .meta-row{flex-direction:column;align-items:flex-start;}
-      .stats,.side-info{grid-template-columns:1fr;}
-      .record-item{grid-template-columns:1fr auto;}
-    }
+    :root{color-scheme:dark;--bg:#09070d;--panel:#100d16;--raised:#17121f;--line:rgba(255,255,255,.075);--text:#f7f3fb;--muted:#a49aaa;--purple:#a76bff;--bright:#c59aff;--soft:rgba(167,107,255,.14);--green:#83e6bd}
+    *{box-sizing:border-box}html{min-width:320px;background:var(--bg);scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);background:radial-gradient(ellipse at 68% 0%,rgba(108,50,157,.15),transparent 40%),var(--bg);font-family:Arial,Helvetica,sans-serif}button,input{font:inherit}button{color:inherit}
+    .topbar{height:72px;display:flex;align-items:center;gap:14px;padding:0 clamp(16px,3vw,42px);border-bottom:1px solid var(--line);background:rgba(9,7,13,.92);position:sticky;top:0;z-index:5;backdrop-filter:blur(16px)}
+    .brand{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:800;letter-spacing:-.4px}.brand img{width:40px;height:40px;object-fit:cover;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:linear-gradient(145deg,#32164e,#a76bff)}.brand span{white-space:nowrap}.top-actions{margin-left:auto;display:flex;gap:8px}.nav-button{border:1px solid var(--line);background:#121019;padding:9px 14px;border-radius:9px;color:#c8bfd1;cursor:pointer;font-size:13px;font-weight:700;transition:.2s}.nav-button:hover,.nav-button.active{color:#fff;border-color:rgba(167,107,255,.48);background:var(--soft)}
+    .layout{display:grid;grid-template-columns:310px minmax(0,1fr);min-height:calc(100vh - 72px)}.sidebar{border-right:1px solid var(--line);background:rgba(15,12,19,.78);min-height:calc(100vh - 72px);display:flex;flex-direction:column}.side-head{padding:21px 16px 13px}.side-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:13px}.eyebrow{color:var(--muted);font-size:10px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase}.count{color:var(--bright);background:var(--soft);border:1px solid rgba(167,107,255,.18);padding:5px 9px;border-radius:999px;font-size:11px}.search-wrap{position:relative}.search-icon{position:absolute;left:13px;top:9px;color:#93869e;font-size:19px}.search{width:100%;color:var(--text);outline:none;background:#0a080e;border:1px solid var(--line);border-radius:9px;padding:11px 12px 11px 38px}.search:focus{border-color:rgba(167,107,255,.65);box-shadow:0 0 0 3px rgba(167,107,255,.1)}
+    .level-list{padding:0 9px 22px;overflow:auto;max-height:calc(100vh - 165px);scrollbar-color:#39264d transparent}.level-row{width:100%;display:grid;grid-template-columns:34px 30px minmax(0,1fr);gap:8px;align-items:center;text-align:left;border:1px solid transparent;border-bottom-color:rgba(255,255,255,.045);background:transparent;padding:9px 8px;cursor:pointer;border-radius:8px;min-height:55px;transition:background .16s,border .16s}.level-row:hover:not(:disabled){background:rgba(255,255,255,.035)}.level-row.selected{background:linear-gradient(100deg,rgba(137,74,213,.2),rgba(67,39,89,.1));border-color:rgba(167,107,255,.22)}.level-row:disabled{cursor:default;opacity:.63}.rank{color:var(--bright);font-size:13px;font-weight:800}.level-emblem{width:26px;height:26px;display:grid;place-items:center;border-radius:8px;font-size:14px;background:linear-gradient(145deg,#271635,#17111e);border:1px solid rgba(167,107,255,.16)}.level-copy{min-width:0}.level-name{display:block;font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.level-creator{display:block;margin-top:3px;color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.empty-note{color:#746b7d}
+    .main{padding:clamp(22px,4vw,48px);min-width:0;max-width:1260px;width:100%;margin:0 auto}.main-heading{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:21px;gap:16px}.main-heading h1{font-size:clamp(23px,3vw,34px);margin:7px 0 0;letter-spacing:-1px;overflow-wrap:anywhere}.main-heading p{color:var(--muted);margin:7px 0 0;font-size:13px}.pill{white-space:nowrap;padding:8px 11px;border:1px solid rgba(167,107,255,.2);border-radius:999px;color:var(--bright);background:var(--soft);font-size:11px;font-weight:700}
+    .detail-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,.8fr);gap:16px;align-items:start}.card{border:1px solid var(--line);border-radius:13px;background:linear-gradient(145deg,rgba(24,18,31,.96),rgba(14,11,18,.96));box-shadow:0 18px 50px rgba(0,0,0,.2);overflow:hidden}.hero{padding:21px;display:flex;align-items:center;gap:16px}.hero-icon{flex:0 0 58px;height:58px;display:grid;place-items:center;border-radius:15px;background:linear-gradient(145deg,#37204b,#17101f);border:1px solid rgba(197,154,255,.23);font-size:25px;color:var(--bright)}.hero-copy{min-width:0}.hero-rank{color:var(--bright);font-size:12px;font-weight:700}.hero h2{margin:4px 0 7px;font-size:clamp(21px,2.6vw,29px);line-height:1.14;overflow-wrap:anywhere}.creator-line{color:var(--muted);font-size:12px}.creator-line strong{color:#eee7f5}.video-frame{width:100%;aspect-ratio:16/9;display:block;border:0;background:#050407}.video-placeholder{aspect-ratio:16/9;display:grid;place-items:center;text-align:center;color:var(--muted);background:radial-gradient(circle at center,rgba(114,65,161,.18),transparent 55%),#08060b}.video-placeholder a{color:var(--bright);text-decoration:none}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--line)}.stat{text-align:center;padding:17px 10px}.stat+.stat{border-left:1px solid var(--line)}.stat-label{display:block;color:var(--muted);font-size:9px;letter-spacing:1.4px;font-weight:800;text-transform:uppercase}.stat-value{display:block;margin-top:7px;font-size:clamp(19px,2.5vw,25px);font-weight:800;overflow-wrap:anywhere}.stat-value.accent{color:var(--bright)}.section-card{padding:18px}.section-card h3{margin:0 0 14px;font-size:14px}.info-item{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-top:1px solid var(--line);font-size:12px}.info-item span{color:var(--muted)}.info-item strong{text-align:right;overflow-wrap:anywhere}.records-card{margin-top:15px}.records-head{display:flex;justify-content:space-between;align-items:center}.record-count{color:var(--muted);font-size:11px}.record{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:12px}.record a{color:var(--bright);text-decoration:none}.verified{color:var(--green);font-size:10px}.no-records{padding:14px 0 1px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+    .leaderboard-view{display:none}.leaderboard-table{width:100%;border-collapse:collapse;text-align:left}.leaderboard-table th{padding:12px 15px;color:var(--muted);font-size:9px;letter-spacing:1.4px;text-transform:uppercase}.leaderboard-table td{border-top:1px solid var(--line);padding:14px 15px;font-size:13px}.leaderboard-table tr:hover td{background:rgba(255,255,255,.02)}.leaderboard-rank,.points{color:var(--bright);font-weight:800}.empty-state{padding:25px 15px;text-align:center;color:var(--muted);font-size:13px}.footer-note{color:#706779;text-align:center;font-size:10px;margin-top:25px}
+    @media(max-width:850px){.layout{grid-template-columns:270px minmax(0,1fr)}.detail-grid{grid-template-columns:1fr}.section-card{padding:16px}}
+    @media(max-width:650px){.topbar{height:62px;padding:0 12px}.brand{gap:9px;font-size:16px}.brand img{width:35px;height:35px}.top-actions{gap:5px}.nav-button{padding:8px 9px;font-size:11px}.layout{display:flex;flex-direction:column;min-height:calc(100vh - 62px)}.sidebar{min-height:0;border-right:0;border-bottom:1px solid var(--line)}.side-head{padding:14px 12px 10px}.side-title{margin-bottom:9px}.level-list{display:flex;overflow-x:auto;overflow-y:hidden;max-height:none;padding:0 10px 10px;gap:6px;scrollbar-width:thin}.level-row{flex:0 0 190px;grid-template-columns:30px 27px minmax(0,1fr);min-height:51px;padding:7px;border:1px solid var(--line)}.level-emblem{width:24px;height:24px}.main{padding:21px 13px 30px}.main-heading{margin-bottom:15px}.hero{padding:16px;gap:12px}.hero-icon{flex-basis:48px;height:48px;font-size:21px;border-radius:13px}}
+    @media(max-width:390px){.brand{font-size:14px}.brand img{width:32px;height:32px}.nav-button{padding:7px}.record{grid-template-columns:minmax(0,1fr) auto}.record .verified{grid-column:2}.leaderboard-table th,.leaderboard-table td{padding:11px 9px}}
   </style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="brand-icon">PL</div>
-        <div>Purblic Level List <span class="subtitle">v3</span></div>
+  <header class="topbar">
+    <div class="brand"><img src="1000094201.png" alt="Purblic Level List icon"><span>Purblic Level List</span></div>
+    <nav class="top-actions" aria-label="Main navigation">
+      <button class="nav-button active" id="levelsTab" type="button">Levels</button>
+      <button class="nav-button" id="leaderboardTab" type="button">Leaderboard</button>
+    </nav>
+  </header>
+  <div class="layout">
+    <aside class="sidebar" aria-label="Level list">
+      <div class="side-head">
+        <div class="side-title"><span class="eyebrow">Demon list</span><span class="count" id="levelCount">0 levels</span></div>
+        <label class="search-wrap"><span class="search-icon" aria-hidden="true">⌕</span><input id="search" class="search" type="search" placeholder="Search levels..." aria-label="Search levels"></label>
       </div>
-      <nav class="nav" aria-label="Main navigation">
-        <button type="button" class="active">Levels</button>
-        <button type="button">Leaderboard</button>
-      </nav>
-    </header>
-
-    <div class="layout">
-      <aside class="sidebar">
-        <div class="side-header">
-          <button class="tab" type="button">Levels</button>
-          <button class="close" type="button" aria-label="Close menu">‹</button>
-        </div>
-        <div class="search-wrap">
-          <input id="searchInput" class="search" type="search" placeholder="Search levels..." />
-        </div>
-        <div id="levelList" class="level-list"></div>
-      </aside>
-
-      <main class="content">
-        <section id="levelView">
-          <div class="title-row">
-            <h1 class="big-title" id="pageTitle">Loading...</h1>
-            <span class="record-badge">Records (0)</span>
-          </div>
-
-          <div class="detail-card">
-            <div class="meta-row">
-              <div class="big-icon">◈</div>
-              <div class="meta-text">
-                <div class="meta-text block" id="detailTitle">Loading...</div>
-                <div class="byline" id="detailCreator">by ...</div>
-              </div>
-            </div>
-
-            <div class="video">
-              <iframe id="videoFrame" src="" title="Level video" allowfullscreen></iframe>
-            </div>
-
-            <div class="stats">
-              <div class="stat">
-                <span class="stat-label">Points</span>
-                <span class="stat-value" id="pointsValue">0</span>
-              </div>
-              <div class="stat">
-                <span class="stat-label">Level ID</span>
-                <span class="stat-value" id="levelIdValue">N/A</span>
-              </div>
-            </div>
-
-            <div class="side-info">
-              <div class="fact">
-                <span class="lbl">Creator</span>
-                <div class="val" id="creatorValue">-</div>
-              </div>
-              <div class="fact">
-                <span class="lbl">Minimum %</span>
-                <div class="val" id="minPercentValue">-</div>
-              </div>
-            </div>
-
-            <div class="records">
-              <div class="records-header">
-                <h3>Records</h3>
-                <span id="recordCount">0</span>
-              </div>
-              <div id="recordsList"></div>
-            </div>
-          </div>
-        </section>
-
-        <section id="leaderboardView" class="leaderboard-wrap">
-          <div class="title-row">
-            <h1 class="big-title">Leaderboard</h1>
-            <span class="record-badge">Top players</span>
-          </div>
-
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Points</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboardBody"></tbody>
-          </table>
-        </section>
-      </main>
-    </div>
+      <div class="level-list" id="levelList" aria-live="polite"></div>
+    </aside>
+    <main class="main">
+      <section id="levelView">
+        <div class="main-heading"><div><div class="eyebrow">The Purblic Level List</div><h1 id="pageTitle">Loading levels...</h1><p id="pageSubtitle">Choose a level to see its details and records.</p></div><span class="pill">✦ &nbsp;Levels 1–150</span></div>
+        <div id="levelDetails"></div>
+      </section>
+      <section id="leaderboardView" class="leaderboard-view">
+        <div class="main-heading"><div><div class="eyebrow">Community rankings</div><h1>Player leaderboard</h1><p>Points earned from level completions.</p></div><span class="pill">♛ &nbsp;Rankings</span></div>
+        <div class="card"><table class="leaderboard-table"><thead><tr><th>Rank</th><th>Player</th><th>Points</th></tr></thead><tbody id="leaderboardBody"></tbody></table><div class="empty-state" id="leaderboardEmpty" hidden>No leaderboard entries yet.</div></div>
+      </section>
+      <p class="footer-note">Purblic Level List · Community-made Geometry Dash demonlist</p>
+    </main>
   </div>
-
   <script>
-    const levelListEl = document.getElementById("levelList");
-    const searchInput = document.getElementById("searchInput");
-    const pageTitle = document.getElementById("pageTitle");
-    const detailTitle = document.getElementById("detailTitle");
-    const detailCreator = document.getElementById("detailCreator");
-    const pointsValue = document.getElementById("pointsValue");
-    const levelIdValue = document.getElementById("levelIdValue");
-    const creatorValue = document.getElementById("creatorValue");
-    const minPercentValue = document.getElementById("minPercentValue");
-    const recordsList = document.getElementById("recordsList");
-    const recordCount = document.getElementById("recordCount");
-    const videoFrame = document.getElementById("videoFrame");
-    const leaderboardBody = document.getElementById("leaderboardBody");
-    const levelView = document.getElementById("levelView");
-    const leaderboardView = document.getElementById("leaderboardView");
-    const navButtons = document.querySelectorAll(".nav button");
+    const levelList=document.getElementById('levelList');
+    const levelDetails=document.getElementById('levelDetails');
+    const searchInput=document.getElementById('search');
+    let levels=[];
+    let selectedPlacement=null;
 
-    let levels = [];
-    let selectedPlacement = 1;
-
-    function escapeHtml(str) {
-      return String(str ?? "").replace(/[&<>"']/g, char => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        "\"":"&quot;",
-        "'":"&#39;"
-      }[char]));
+    function escapeHTML(value){return String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));}
+    function youtubeEmbed(url){
+      if(!url)return null;
+      try{const parsed=new URL(url);let id='';if(parsed.hostname==='youtu.be'||parsed.hostname.endsWith('.youtu.be'))id=parsed.pathname.split('/').filter(Boolean)[0]||'';else if(parsed.hostname.includes('youtube.com'))id=parsed.searchParams.get('v')||parsed.pathname.split('/').filter(Boolean).pop();return id?`https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}`:null;}catch{return null;}
     }
-
-    function getYoutubeEmbed(url){
-      if(!url) return "";
+    function renderList(filter=''){
+      const query=filter.trim().toLowerCase();levelList.innerHTML='';
+      for(let rank=1;rank<=150;rank++){
+        const level=levels.find(item=>Number(item.placement)===rank);
+        const name=level?.name||`Level #${rank}`;const creator=level?.creator||'';
+        if(query&&!`${name} ${creator} ${rank} ${level?.id||''}`.toLowerCase().includes(query))continue;
+        const button=document.createElement('button');button.type='button';button.className=`level-row${selectedPlacement===rank?' selected':''}`;button.setAttribute('aria-label',level?`View #${rank}, ${name}`:`No level listed at #${rank}`);button.disabled=!level;
+        button.innerHTML=`<span class="rank">#${rank}</span><span class="level-emblem" aria-hidden="true">${level?'◈':'·'}</span><span class="level-copy"><span class="level-name">${escapeHTML(name)}</span><span class="level-creator">${level?`by ${escapeHTML(creator||'Unknown')}`:'<span class="empty-note">Awaiting a level</span>'}</span></span>`;
+        if(level)button.addEventListener('click',()=>selectLevel(rank));levelList.appendChild(button);
+      }
+    }
+    function selectLevel(rank){
+      const level=levels.find(item=>Number(item.placement)===rank);if(!level)return;
+      selectedPlacement=rank;renderList(searchInput.value);
+      document.getElementById('pageTitle').textContent=level.name;
+      document.getElementById('pageSubtitle').textContent=`Rank #${rank} · Created by ${level.creator||'Unknown'}`;
+      const video=youtubeEmbed(level.video);const records=Array.isArray(level.records)?level.records:[];
+      levelDetails.innerHTML=`<div class="detail-grid"><div>
+        <article class="card"><div class="hero"><div class="hero-icon" aria-hidden="true">◈</div><div class="hero-copy"><span class="hero-rank">#${rank} · PURBLIC DEMON</span><h2>${escapeHTML(level.name)}</h2><div class="creator-line">Creator: <strong>${escapeHTML(level.creator||'Unknown')}</strong></div></div></div>
+        ${video?`<iframe class="video-frame" src="${video}" title="${escapeHTML(level.name)} gameplay video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>`:`<div class="video-placeholder">No video provided for this level.</div>`}
+        <div class="stats"><div class="stat"><span class="stat-label">Points for completion</span><span class="stat-value accent">${escapeHTML(level.points??'—')}</span></div><div class="stat"><span class="stat-label">Level ID</span><span class="stat-value">${escapeHTML(level.id||'N/A')}</span></div></div></article>
+        <article class="card section-card records-card"><div class="records-head"><h3>Completion records</h3><span class="record-count">${records.length} ${records.length===1?'record':'records'}</span></div>${records.length?records.map(record=>`<div class="record"><strong>${escapeHTML(record.name||'Unknown')}</strong><span>${escapeHTML(record.percentage??'—')}%</span><span class="verified">${record.verified?'✓ Verified':'Unverified'}</span>${record.video?`<a href="${escapeHTML(record.video)}" target="_blank" rel="noopener noreferrer">Watch ↗</a>`:'<span></span>'}</div>`).join(''):'<div class="no-records">No completion records have been submitted yet.</div>'}</article>
+        </div><aside class="card section-card"><h3>Level information</h3><div class="info-item"><span>List placement</span><strong>#${rank}</strong></div><div class="info-item"><span>Creator</span><strong>${escapeHTML(level.creator||'Unknown')}</strong></div><div class="info-item"><span>Minimum completion</span><strong>${escapeHTML(level.minimumPercentage??'—')}%</strong></div><div class="info-item"><span>Level ID</span><strong>${escapeHTML(level.id||'N/A')}</strong></div><div class="info-item"><span>Points</span><strong>${escapeHTML(level.points??'—')}</strong></div></aside></div>`;
+    }
+    function showView(view){const board=view==='leaderboard';document.getElementById('levelView').style.display=board?'none':'block';document.getElementById('leaderboardView').style.display=board?'block':'none';document.getElementById('levelsTab').classList.toggle('active',!board);document.getElementById('leaderboardTab').classList.toggle('active',board);document.querySelector('.sidebar').style.display=board?'none':'flex';}
+    async function loadData(){
       try{
-        const u = new URL(url);
-        let id = "";
-        if(u.hostname.includes("youtu.be")) id = u.pathname.replace("/", "");
-        else if(u.hostname.includes("youtube.com")) id = u.searchParams.get("v") || "";
-        return id ? "https://www.youtube-nocookie.com/embed/" + id : "";
-      }catch(e){return "";}
+        const [levelsResponse,boardResponse]=await Promise.all([fetch('./data.json'),fetch('./leaderboard.json')]);if(!levelsResponse.ok||!boardResponse.ok)throw new Error('Could not load list data.');
+        const data=await levelsResponse.json();const board=await boardResponse.json();levels=(Array.isArray(data.levels)?data.levels:[]).sort((a,b)=>Number(a.placement)-Number(b.placement));
+        document.getElementById('levelCount').textContent=`${levels.length} ${levels.length===1?'level':'levels'}`;renderList();if(levels.length)selectLevel(Number(levels[0].placement)||1);
+        const users=Array.isArray(board.users)?board.users:[];users.sort((a,b)=>Number(a.placement)-Number(b.placement));const body=document.getElementById('leaderboardBody');
+        users.forEach((user,index)=>{const row=document.createElement('tr');row.innerHTML=`<td class="leaderboard-rank">#${escapeHTML(user.placement??index+1)}</td><td><strong>${escapeHTML(user.name||'Unknown')}</strong></td><td class="points">${escapeHTML(user.points??0)}</td>`;body.appendChild(row);});document.getElementById('leaderboardEmpty').hidden=users.length>0;
+      }catch(error){console.error(error);document.getElementById('pageTitle').textContent='Could not load the list';document.getElementById('pageSubtitle').textContent='Please check that data.json and leaderboard.json are available.';}
     }
-
-    async function loadData() {
-      try {
-        const [levelsRes, boardRes] = await Promise.all([
-          fetch("data.json"),
-          fetch("leaderboard.json")
-        ]);
-
-        if (!levelsRes.ok || !boardRes.ok) throw new Error("Failed to load JSON.");
-
-        const levelsData = await levelsRes.json();
-        const boardData = await boardRes.json();
-
-        levels = Array.isArray(levelsData.levels) ? levelsData.levels : [];
-        levels.sort((a,b) => Number(a.placement) - Number(b.placement));
-
-        renderList();
-        if (levels.length) selectLevel(levels[0].placement);
-
-        renderLeaderboard(boardData.users || []);
-      } catch (error) {
-        console.error(error);
-        pageTitle.textContent = "Data not available";
-      }
-    }
-
-    function renderLeaderboard(users) {
-      leaderboardBody.innerHTML = "";
-      if (!users.length) {
-        leaderboardBody.innerHTML = '<tr><td colspan="3">No users yet.</td></tr>';
-        return;
-      }
-
-      users
-        .sort((a, b) => Number(b.points) - Number(a.points))
-        .forEach((user, index) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>#${index + 1}</td>
-            <td>${escapeHtml(user.name || "Unknown")}</td>
-            <td>${escapeHtml(user.points || 0)}</td>
-          `;
-          leaderboardBody.appendChild(tr);
-        });
-    }
-
-    function renderList() {
-      const query = searchInput.value.trim().toLowerCase();
-      levelListEl.innerHTML = "";
-
-      const filtered = levels.filter(level => {
-        const text = `${level.name || ""} ${level.creator || ""} ${level.placement || ""} ${level.id || ""}`.toLowerCase();
-        return !query || text.includes(query);
-      });
-
-      filtered.forEach(level => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "level-item" + (Number(level.placement) === Number(selectedPlacement) ? " selected":"");
-        btn.innerHTML = `
-          <span class="rank">#${escapeHtml(level.placement)}</span>
-          <span class="mini-icon">◈</span>
-          <span class="level-main">
-            <span class="level-name">${escapeHtml(level.name)}</span>
-            <span class="level-author">by ${escapeHtml(level.creator || "Unknown")}</span>
-          </span>
-        `;
-        btn.addEventListener("click", () => selectLevel(level.placement));
-        levelListEl.appendChild(btn);
-      });
-
-      if (!filtered.length) {
-        levelListEl.innerHTML = '<div style="padding:12px 16px;color:#8f9ab3;">No levels match your search.</div>';
-      }
-    }
-
-    function selectLevel(placement) {
-      const level = levels.find(l => Number(l.placement) === Number(placement));
-      if (!level) return;
-
-      selectedPlacement = Number(placement);
-      renderList();
-
-      const embed = getYoutubeEmbed(level.video);
-      pageTitle.textContent = level.name;
-      detailTitle.textContent = level.name;
-      detailCreator.textContent = "by " + (level.creator || "Unknown");
-      pointsValue.textContent = level.points ?? "0";
-      levelIdValue.textContent = level.id ?? "N/A";
-      creatorValue.textContent = level.creator || "Unknown";
-      minPercentValue.textContent = level.minimumPercentage ? level.minimumPercentage + "%" : "N/A";
-      recordCount.textContent = (level.records || []).length;
-
-      if (embed) {
-        videoFrame.src = embed;
-      } else {
-        videoFrame.src = "about:blank";
-      }
-
-      recordsList.innerHTML = "";
-      const records = Array.isArray(level.records) ? level.records : [];
-      if (!records.length) {
-        recordsList.innerHTML = '<div style="color:#8f9ab3;padding:12px 0;">No records yet.</div>';
-        return;
-      }
-
-      records.forEach(rec => {
-        const row = document.createElement("div");
-        row.className = "record-item";
-        row.innerHTML = `
-          <div class="name">${escapeHtml(rec.name || "Unknown")}</div>
-          <div class="pct">${escapeHtml(rec.percentage ?? 0)}%</div>
-          <div class="status">${rec.verified ? "Verified" : "Unverified"}</div>
-          ${rec.video ? `<a href="${escapeHtml(rec.video)}" target="_blank" rel="noreferrer">Watch↗</a>` : ""}
-        `;
-        recordsList.appendChild(row);
-      });
-    }
-
-    navButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        navButtons.forEach(b => b.classList.toggle("active", b === btn));
-        const isLeader = btn.textContent.trim().toLowerCase() === "leaderboard";
-        levelView.style.display = isLeader ? "none" : "block";
-        leaderboardView.style.display = isLeader ? "block" : "block";
-      });
-    });
-
-    searchInput.addEventListener("input", renderList);
-
-    loadData();
+    searchInput.addEventListener('input',event=>renderList(event.target.value));document.getElementById('levelsTab').addEventListener('click',()=>showView('levels'));document.getElementById('leaderboardTab').addEventListener('click',()=>showView('leaderboard'));loadData();
   </script>
 </body>
 </html>
